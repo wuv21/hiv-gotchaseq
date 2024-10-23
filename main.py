@@ -9,7 +9,7 @@ import pprint as pp
 from csv import writer
 
 
-def parseBam(bamfile, mappedReads, softClipReads, top_n = -1):
+def parseBam(bamfile, mappedReads, top_n = -1):
   bam = pysam.AlignmentFile(bamfile, "rb", threads = 20)
   readIndex = 0
 

@@ -41,21 +41,22 @@ def parseBam(bamfile, mappedReads, softClipReads, top_n = -1):
 
     # ignore if no valid barcode
     if not read.has_tag("CB"):
+      readIndex += 1
+      continue
+    elif read.has_tag("CB") and read.get_tag("CB")[-2:] != "-1":
+      readIndex += 1
       continue
 
     if refnameIsProviral and not hasSoftClipAtEnd:
       mappedReads[read.query_name].append(read)
-    elif refnameIsProviral and hasSoftClipAtEnd:
-      softClipReads[read.query_name].append(read)
 
   print()
   return bam
 
 def main(args):
   mappedReads = defaultdict(list)
-  softClipReads = defaultdict(list)
 
-  parseBam(args.bamfile, mappedReads=mappedReads, softClipReads=softClipReads, top_n = -1)
+  parseBam(args.bamfile, mappedReads=mappedReads, top_n = -1)
 
   # check where the reads are aligning to
   compiledData = []
@@ -63,11 +64,6 @@ def main(args):
     pairReal = mappedReads[pair]
     if len(pairReal) != 2:
       continue
-
-    # needs valid cb to pass
-    if pairReal[0].get_tag("CB")[-2:] != "-1":
-      continue
-
 
     compiledData.append({
       "qname": pairReal[0].query_name,
